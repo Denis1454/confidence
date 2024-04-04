@@ -7,7 +7,7 @@ import ru.practicum.confidence.model.Product;
 @Data
 @Builder
 public class BasketDto {
-    Long id;
+    private Long id;
 
-    Product product;
+    private Product product;
 }

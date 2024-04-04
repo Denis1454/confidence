@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 import ru.practicum.confidence.model.type.ProductTypes;
 
-@Value
+@Data
 @Builder
 public class ProductDto {
     Long id;
@@ -17,6 +17,5 @@ public class ProductDto {
     String description;
     @NotNull
     Double price;
-
     ProductTypes productTypes;
 }
