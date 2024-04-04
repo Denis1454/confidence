@@ -15,6 +15,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
+    private final String ERR_MESSAGE_USER_NOT_FOUND = "Продукта с таким id=%s не существует";
+
     private final ProductRepository productRepository;
 
     private final ProductMapperDto productMapperDto;
@@ -27,8 +29,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDto updateUser(ProductDto productDto) {
-        Product product = productRepository.findById(productDto.getId())
-                .orElseThrow(() -> new NotFoundException("Продукта с таким Id не существует"));
+        Product product = getProduct(productDto.getId());
         productMapperDto.updateProductDto(productDto, product);
         Product updated = productRepository.save(product);
         return productMapperDto.toProductDto(updated);
@@ -39,15 +40,19 @@ public class ProductServiceImpl implements ProductService {
         if (productRepository.existsById(productId)) {
             productRepository.deleteById(productId);
         } else {
-            throw new NotFoundException("Продукта с таким Id не существует");
+            throw new NotFoundException(String.format(ERR_MESSAGE_USER_NOT_FOUND, productId));
         }
     }
 
     @Override
     public ProductDto getById(Long productId) {
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Продукта с таким Id не существует"));
+        Product product = getProduct(productId);
         return productMapperDto.toProductDto(product);
+    }
+
+    private Product getProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException(String.format(ERR_MESSAGE_USER_NOT_FOUND, productId)));
     }
 
     @Override

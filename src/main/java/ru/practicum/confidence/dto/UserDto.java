@@ -17,6 +17,5 @@ public class UserDto {
     @NotBlank
     @Email
     String email;
-
     Basket basket;
 }

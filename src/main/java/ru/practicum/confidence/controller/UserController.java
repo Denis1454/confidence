@@ -1,7 +1,7 @@
 package ru.practicum.confidence.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.confidence.dto.UserDto;
 import ru.practicum.confidence.service.UserService;
@@ -15,13 +15,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping()
-    public UserDto create(@RequestBody @Validated UserDto userDto) {
-        return userService.create(userDto);
+    public UserDto create(@RequestBody @Valid UserDto userDto,Long userId) {
+        return userService.create(userDto,userId);
     }
 
     @PatchMapping("/update")
-    public UserDto update(@RequestBody UserDto userDto) {
-        return userService.updateUser(userDto);
+    public UserDto UserUpdateDto(@RequestBody UserDto userDto,Long userId) {
+        return userService.updateUser(userDto,userId);
     }
 
     @DeleteMapping("/{userId}")

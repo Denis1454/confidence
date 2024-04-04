@@ -1,7 +1,7 @@
 package ru.practicum.confidence.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.confidence.dto.ProductDto;
 import ru.practicum.confidence.service.ProductService;
@@ -16,7 +16,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping()
-    public ProductDto create(@RequestBody @Validated ProductDto productDto) {
+    public ProductDto create(@RequestBody @Valid ProductDto productDto) {
         return productService.create(productDto);
     }
 

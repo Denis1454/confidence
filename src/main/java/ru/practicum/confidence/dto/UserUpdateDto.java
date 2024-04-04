@@ -2,13 +2,12 @@ package ru.practicum.confidence.dto;
 
 import jakarta.validation.constraints.Email;
 import lombok.Builder;
-import lombok.Value;
+import lombok.Data;
 
-@Value
+@Data
 @Builder
 public class UserUpdateDto {
     Long id;
-
     String name;
     @Email
     String email;

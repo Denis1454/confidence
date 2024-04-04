@@ -18,23 +18,24 @@ import static org.springframework.util.CollectionUtils.isEmpty;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final String ERR_MESSAGE_USER_NOT_FOUND = "Пользователя с таким id=%s не существует";
+
     private final UserRepository userRepository;
 
     private final UserMapperDto userMapperDto;
 
     @Override
-    public UserDto create(UserDto userDto) {
-        checkDuplicatesEmail(userDto);
-        User user = userRepository.save(userMapperDto.toDto(userDto));
+    public UserDto create(UserDto userDto,Long userId) {
+        checkDuplicatesEmail(userDto,userId);
         userDto.getBasket().setId(userDto.getId());
+        User user = userRepository.save(userMapperDto.toDto(userDto));
         return userMapperDto.toUserDto(user);
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto) {
-        User user = userRepository.findById(userDto.getId())
-                .orElseThrow(() -> new NotFoundException("Пользователя с таким Id не существует"));
-        checkDuplicatesEmail(userDto);
+    public UserDto updateUser(UserDto userDto,Long userId) {
+        User user = getUser(userDto.getId());
+        checkDuplicatesEmail(userDto,userId);
         userMapperDto.updateUserDto(userDto, user);
         User updated = userRepository.save(user);
         return userMapperDto.toUserDto(updated);
@@ -45,24 +46,28 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsById(userId)) {
             userRepository.deleteById(userId);
         } else {
-            throw new NotFoundException("Пользователя с таким Id не существует");
+            throw new NotFoundException(String.format(ERR_MESSAGE_USER_NOT_FOUND, userId));
         }
     }
 
     @Override
     public UserDto getById(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с таким Id не существует"));
+        User user = getUser(userId);
         return userMapperDto.toUserDto(user);
     }
 
-    private void checkDuplicatesEmail(UserDto userDto) {
+    private User getUser(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(String.format(ERR_MESSAGE_USER_NOT_FOUND, userId)));
+    }
+
+    private void checkDuplicatesEmail(UserDto userDto, Long userId) {
         List<User> emailExist = userRepository.findAll().stream()
                 .filter(user -> user.getEmail().equals(userDto.getEmail()))
                 .toList();
         if (!isEmpty(emailExist)) {
             User user = emailExist.get(0);
-            if (userDto.getEmail().equals(user.getEmail())) {
+            if (userDto.getEmail().equals(user.getEmail()) && user.getId().equals(userId)) {
                 return;
             }
             throw new UserDuplicateEmailException("Такой email уже зарегистрирован");
